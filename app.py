@@ -56,6 +56,20 @@ def index():
     return render_template('index.html', tasks=tasks)
 
 
+# Route to delete task
+@app.route("/delete/<int:id>")
+def delete(id: int):
+    delete_task = MyTask.query.get_or_404(id)
+    try:
+        db.session.delete(delete_task)
+        db.session.commit()
+        flash("Task deleted successfully!", "success")
+        return redirect("/")
+    except Exception as e:
+        flash(f"An error occurred while deleting the task: {e}", "error")
+        return redirect("/")
+
+
 # Run the app
 if __name__ == "__main__":
     app.run(debug=True)
