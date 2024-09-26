@@ -70,6 +70,27 @@ def delete(id: int):
         return redirect("/")
 
 
+# Edit an item
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit(id: int):
+    task = MyTask.query.get_or_404(id)
+    if request.method == "POST":
+        task.content = request.form['content']
+        if not task.content.strip():
+            flash("Task content cannot be empty!", "error")
+            return redirect(f"/edit/{id}")
+
+        try:
+            db.session.commit()
+            flash("Task updated successfully!", "success")
+            return redirect("/")
+        except Exception as e:
+            flash(f"Error updating task: {e}", "error")
+            return redirect(f"/edit/{id}")
+    else:
+        return render_template('edit.html', task=task)
+
+
 # Run the app
 if __name__ == "__main__":
     app.run(debug=True)
